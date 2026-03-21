@@ -1,5 +1,5 @@
 
-## Monitoramento de Síndrome Gripal (e-SUS Notifica)
+## Monitoramento de Síndrome Gripal
 
 Projeto que consiste em uma aplicação desenvolvida com **Django Framework** para consumir e gerenciar dados da **API de Notificações de Síndrome Gripal**, integrada ao catálogo do Governo Federal (Conecta gov.br).
 
