@@ -1,3 +1,698 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Síndrome Gripal - Monitoramento Nacional</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .sidebar {
+            background: #fff;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            min-height: 100vh;
+            position: sticky;
+            top: 56px;
+        }
+
+        .sidebar-sticky {
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f8f9fa;
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            color: #2d3748;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .text-muted {
+            font-size: 0.95rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.info {
+            border-left-color: var(--info-color);
+        }
+
+        .stat-card-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.danger .stat-card-icon {
+            color: var(--danger-color);
+        }
+
+        .stat-card.success .stat-card-icon {
+            color: var(--success-color);
+        }
+
+        .stat-card.warning .stat-card-icon {
+            color: var(--warning-color);
+        }
+
+        .stat-card.info .stat-card-icon {
+            color: var(--info-color);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .sync-status {
+            padding: 1rem;
+            border-radius: 10px;
+            background: #e7f5ff;
+            border-left: 4px solid var(--info-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .sync-status.success {
+            background: #d3f9d8;
+            border-left-color: var(--success-color);
+        }
+
+        .sync-status.error {
+            background: #ffe0e0;
+            border-left-color: var(--danger-color);
+        }
+
+        .sync-status-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sync-status-text {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        .btn-custom {
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 300px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="bi bi-graph-up"></i> Monitor Síndrome Gripal BR
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">
+                                <i class="bi bi-gear"></i> Administração
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/api/v1/">
+                                <i class="bi bi-code-square"></i> API REST
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4 main-content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1>Dashboard de Casos - Síndrome Gripal</h1>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-geo-alt"></i> Monitoramento Nacional em Tempo Real
+                    </p>
+                </div>
+
+                <!-- Sync Status -->
+                {% if ultima_sincronizacao %}
+                <div class="sync-status {% if ultima_sincronizacao.status == 'sucesso' %}success{% elif ultima_sincronizacao.status == 'erro' %}error{% endif %}">
+                    <div class="sync-status-icon">
+                        {% if ultima_sincronizacao.status == 'sucesso' %}
+                            <i class="bi bi-check-circle text-success"></i>
+                        {% elif ultima_sincronizacao.status == 'erro' %}
+                            <i class="bi bi-exclamation-circle text-danger"></i>
+                        {% else %}
+                            <i class="bi bi-arrow-repeat text-info spinner"></i>
+                        {% endif %}
+                    </div>
+                    <div class="sync-status-text">
+                        <strong>
+                            {% if ultima_sincronizacao.status == 'sucesso' %}
+                                ✓ Última sincronização: {{ ultima_sincronizacao.data_atualizacao|date:"d/m/Y H:i" }}
+                                ({{ ultima_sincronizacao.registros_importados }} importados, {{ ultima_sincronizacao.registros_atualizados }} atualizados)
+                            {% elif ultima_sincronizacao.status == 'erro' %}
+                                ✗ Erro na sincronização: {{ ultima_sincronizacao.mensagem_erro }}
+                            {% else %}
+                                Sincronização em progresso...
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Statistics Cards -->
+                <div class="row fade-in">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card success">
+                            <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
+                            <div class="stat-value">{{ total_confirmados|floatformat:0 }}</div>
+                            <div class="stat-label">Casos Confirmados</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card danger">
+                            <div class="stat-card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                            <div class="stat-value">{{ total_obitos|floatformat:0 }}</div>
+                            <div class="stat-label">Óbitos</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card warning">
+                            <div class="stat-card-icon"><i class="bi bi-question-circle-fill"></i></div>
+                            <div class="stat-value">{{ total_suspeitos|floatformat:0 }}</div>
+                            <div class="stat-label">Suspeitos</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card info">
+                            <div class="stat-card-icon"><i class="bi bi-check-circle-fill"></i></div>
+                            <div class="stat-value">{{ total_descartados|floatformat:0 }}</div>
+                            <div class="stat-label">Descartados</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Statistics -->
+                <div class="row fade-in" style="animation-delay: 0.1s;">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-card-icon"><i class="bi bi-building"></i></div>
+                            <div class="stat-value">{{ numero_estados }}</div>
+                            <div class="stat-label">Estados Monitorados</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-card-icon"><i class="bi bi-calendar"></i></div>
+                            <div class="stat-value">{{ numero_registros }}</div>
+                            <div class="stat-label">Registros Totais</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card danger">
+                            <div class="stat-card-icon"><i class="bi bi-percent"></i></div>
+                            <div class="stat-value">{{ taxa_mortalidade }}%</div>
+                            <div class="stat-label">Taxa de Mortalidade</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card info">
+                            <div class="stat-card-icon"><i class="bi bi-server"></i></div>
+                            <div class="stat-value">
+                                <span class="badge bg-success" style="font-size: 0.7rem;">ATIVO</span>
+                            </div>
+                            <div class="stat-label">Status da API</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row fade-in" style="animation-delay: 0.2s;">
+                    <!-- Distribuição por Região -->
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="bi bi-pie-chart"></i> Distribuição por Região
+                            </div>
+                            <div class="chart-canvas">
+                                <canvas id="chartRegiao"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estado com Mais Casos -->
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="bi bi-bar-chart"></i> Top 10 Estados
+                            </div>
+                            <div class="chart-canvas">
+                                <canvas id="chartEstado"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evolução Temporal -->
+                <div class="row fade-in" style="animation-delay: 0.3s;">
+                    <div class="col-lg-12">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="bi bi-graph-up"></i> Evolução Temporal (Últimos 30 Dias)
+                            </div>
+                            <div style="position: relative; height: 350px;">
+                                <canvas id="chartEvolucao"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Tables -->
+                <div class="row fade-in" style="animation-delay: 0.4s;">
+                    <!-- Últimos Registros -->
+                    <div class="col-lg-12">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="bi bi-calendar"></i> Data</th>
+                                        <th><i class="bi bi-map"></i> Estado</th>
+                                        <th><i class="bi bi-geo"></i> Região</th>
+                                        <th class="text-success"><i class="bi bi-check-circle"></i> Confirmados</th>
+                                        <th class="text-warning"><i class="bi bi-question-circle"></i> Suspeitos</th>
+                                        <th class="text-danger"><i class="bi bi-exclamation-circle"></i> Óbitos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for registro in ultimos_registros %}
+                                    <tr>
+                                        <td><strong>{{ registro.data|date:"d/m/Y" }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ registro.estado }}</span>
+                                        </td>
+                                        <td>{{ registro.regiao }}</td>
+                                        <td class="text-success fw-bold">{{ registro.casos_confirmados }}</td>
+                                        <td class="text-warning fw-bold">{{ registro.casos_suspeitos }}</td>
+                                        <td class="text-danger fw-bold">{{ registro.obitos }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            Nenhum registro encontrado. Execute a sincronização para importar dados.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Links for More Data -->
+                <div class="alert alert-info fade-in" style="animation-delay: 0.5s;">
+                    <i class="bi bi-info-circle"></i> <strong>Dados em Tempo Real:</strong>
+                    Acesse a <a href="/api/v1/casos-nacionais/" class="alert-link">API REST</a> para consultar dados detalhados
+                    ou visite a <a href="/admin/" class="alert-link">Administração</a> para gerenciar sincronizações.
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>
+                        <i class="bi bi-database"></i> Dados fornecidos pelo Open Data SUS - Ministério da Saúde do Brasil
+                        <br>
+                        <small class="text-muted">Última atualização: {% now "d/m/Y H:i:s" %}</small>
+                    </p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <script>
+        // Cores do gráfico
+        const colors = {
+            primary: '#667eea',
+            success: '#198754',
+            danger: '#dc3545',
+            warning: '#ffc107',
+            info: '#0dcaf0',
+            light: '#f8f9fa',
+            dark: '#2d3748'
+        };
+
+        // Dados do servidor
+        const dataRegiao = {{ por_regiao|safe }};
+        const dataEstado = {{ por_estado|safe }};
+        const dataEvolucao = {{ evolucao|safe }};
+
+        // Gráfico de Distribuição por Região (Pie)
+        if (dataRegiao.length > 0) {
+            const ctxRegiao = document.getElementById('chartRegiao').getContext('2d');
+            new Chart(ctxRegiao, {
+                type: 'doughnut',
+                data: {
+                    labels: dataRegiao.map(r => r.regiao),
+                    datasets: [{
+                        data: dataRegiao.map(r => r.total),
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#4facfe',
+                            '#00f2fe',
+                            '#43e97b',
+                            '#fa709a',
+                            '#fee140'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de Top 10 Estados (Bar)
+        if (dataEstado.length > 0) {
+            const ctxEstado = document.getElementById('chartEstado').getContext('2d');
+            new Chart(ctxEstado, {
+                type: 'bar',
+                data: {
+                    labels: dataEstado.map(e => e.estado),
+                    datasets: [{
+                        label: 'Casos Confirmados',
+                        data: dataEstado.map(e => e.total),
+                        backgroundColor: colors.primary,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Gráfico de Evolução Temporal (Line)
+        if (dataEvolucao.length > 0) {
+            const ctxEvolucao = document.getElementById('chartEvolucao').getContext('2d');
+            new Chart(ctxEvolucao, {
+                type: 'line',
+                data: {
+                    labels: dataEvolucao.map(d => new Date(d.data).toLocaleDateString('pt-BR')),
+                    datasets: [
+                        {
+                            label: 'Confirmados',
+                            data: dataEvolucao.map(d => d.confirmados),
+                            borderColor: colors.success,
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Suspeitos',
+                            data: dataEvolucao.map(d => d.suspeitos),
+                            borderColor: colors.warning,
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Descartados',
+                            data: dataEvolucao.map(d => d.descartados),
+                            borderColor: colors.info,
+                            backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, font: { size: 12 } }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString('pt-BR') } }
+                    }
+                }
+            });
+        }
+
+        // Animação de spinner
+        const spinner = document.querySelector('.spinner');
+        if (spinner) {
+            setInterval(() => {
+                spinner.style.transform = 'rotate(' + (Date.now() / 10) + 'deg)';
+            }, 50);
+        }
+    </script>
+</body>
+</html>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
   <head>
