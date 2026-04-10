@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from ninja import NinjaAPI
 
 api = NinjaAPI()
@@ -9,5 +9,7 @@ api = NinjaAPI()
 #    return
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+    path('', include('app.urls')),  # Dashboard e API na raiz
 ]
