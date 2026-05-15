@@ -1,6 +1,12 @@
 from django.urls import path, include
+from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from . import views
+
+#alterar "adm django"
+admin.site.site_header = "ADM SITE"
+admin.site.site_title = "Sindrome Gripal"
+#admin.site.site_url = "notificacao-sindrome-gripal.herokuapp.com"
 
 # Configuração do router para API REST
 router = DefaultRouter()
